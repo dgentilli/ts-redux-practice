@@ -9,9 +9,28 @@ interface AppProps {
   deleteTodo: typeof deleteTodo;
 }
 
-class _App extends React.Component<AppProps> {
+interface AppState {
+  loading: boolean;
+}
+
+class _App extends React.Component<AppProps, AppState> {
+  constructor(props: AppProps) {
+    super(props);
+
+    this.state = {
+      loading: false,
+    };
+  }
+
+  componentDidUpdate(prevProps: AppProps) {
+    if (!prevProps.todos.length && this.props.todos.length) {
+      this.setState({ loading: false });
+    }
+  }
+
   handleClick = (): void => {
     this.props.fetchTodos();
+    this.setState({ loading: true });
   };
 
   handleDelete = (id: number): void => {
@@ -32,6 +51,7 @@ class _App extends React.Component<AppProps> {
     return (
       <div>
         <button onClick={this.handleClick}>Fetch</button>
+        {this.state.loading && 'Loading...'}
         {this.renderList()}
       </div>
     );
